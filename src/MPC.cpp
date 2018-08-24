@@ -121,7 +121,7 @@ class FG_eval {
       AD<double> delta_t = vars[i_delta_0 + t - 1];
       AD<double> a_t = vars[i_a_0 + t - 1];
       
-      // please change this to the 3 coefficients.
+      // from the cubic polynomial
       AD<double> f_t = coeffs[0] + coeffs[1]*x_t + coeffs[2]*CppAD::pow(x_t,2) + coeffs[3]*CppAD::pow(x_t,3);
       AD<double> psides_t = CppAD::atan(coeffs[1]+2*coeffs[2]*x_t + 3*coeffs[3]*CppAD::pow(x_t,2));
 
