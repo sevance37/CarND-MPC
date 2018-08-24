@@ -12,7 +12,7 @@ The program is written in C++.  This Project is from Udacity's Self-Driving Car 
 5. Run the programs: Run `./mpc`. Open [Term 2 Simulator](https://github.com/udacity/self-driving-car-sim/releases) and run the corresponding page.  
 
 ## The Race
-Enclosed is a [video](https://youtu.be/Eq0N_9HATig) of the car racing using the model and parameters described below.  
+Enclosed is a link to the [video](https://youtu.be/Eq0N_9HATig) of the car racing using the model and parameters described below.  
 [<img src="images/RaceCarProjectMPC.jpg" alt="lanes" width="400px"/>](https://youtu.be/Eq0N_9HATig)
 
 ## The Model  
