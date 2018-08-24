@@ -1,5 +1,5 @@
 # CarND-MPC
-Drive a race car around a track using a MPC (Model Predictive Control). 
+Drive a race car around a track using MPC (Model Predictive Control).   
 The program is written in C++.  This Project is from Udacity's Self-Driving Car Engineer Nanodegree Program.
 
 ## Basic Set-up
@@ -14,8 +14,8 @@ The program is written in C++.  This Project is from Udacity's Self-Driving Car 
 ## The Model  
 
 ### The Kinematic Model
-To drive the race car around the track, we need to specify a kinematic model for the vehicle.  To specify the model, we need to know the state of the car, how to control is movement via actuators and the equations of motions that it follows.
-* **The State**:  The state vector contains information about the state of the vehicle.  We track the position (x,y), the orientation (&psi;) and the velocity (v) of the car.  In addition to this, we include L<sub>f</sub> which is a measure of the distance between the front of the car and its center of gravity.  
+To drive the race car around the track, we need to specify a kinematic model for the vehicle.  To specify the model, we need to know the state of the car, how to control is movement via actuators, and the equations of motions that it follows.
+* **The State**:  The state vector contains information about the state of the vehicle.  We track the position (x,y), the orientation (&psi;) and the velocity (v) of the car.    
 
     state = [x, y, &psi;, v]    
 
@@ -23,38 +23,45 @@ To drive the race car around the track, we need to specify a kinematic model for
 
     actuators = [&delta;, a]
 
-* **The Equations of motion**:  The equations of motion indicate how the car moves through time and are given below.  For each time step dt, the state evolves according to  
+* **The Equations of motion**:  The equations of motion indicate how the car moves through time. The state changes from time t to time t+dt according to the equations:
 
     x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub>cos(&psi;<sub>t</sub>) * dt   
     y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub>sin(&psi;<sub>t</sub>) * dt  
     &psi;<sub>t+1</sub> = &psi;<sub>t</sub> + (v<sub>t</sub>/L<sub>f</sub>) &delta;<sub>t</sub> * dt  
     v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> * dt
+ 
+where L<sub>f</sub> is the distance between the front of the car and its center of gravity.
 
 ### The Trajectory
-To drive the race car around the track, we need to know the reference (or desired) path.  This is provided to us a set of waypoints.  The desired path can then be inferred by fitting those points with a cubic polynomial.   
+To drive the race car around the track, we need to know the reference or desired path.  This is provided to us as a set of waypoints.  The reference path can be inferred by fitting those points with a cubic polynomial.   
+
+**Calculation Frame of Reference:**  The state of the car and the waypoints are given in the map's coordinates.  Before the reference path is fit and the other calculations are run, we transform from the map's frame of reference to the cars frame of reference using a rotation and a translation.  The state of the car in its reference frame is then [x=0,y=0,&psi;=0,v]. 
 
 ### The Errors
 To determine how far we are off of the desired path, we calculate two errors. 
-1. The cross track error (cte).  The cross track error is the perpendicular difference between the desired path and the vehicle's position.  The desired path is given as f(x), where f is the cubic polynomail fit to the waypoints.
+1. The cross track error (cte).  The cross track error is the difference between the closest point on the desired path and the vehicle's position.  The desired path is given as f(x), where f is the cubic polynomial fit to the waypoints.
 2. The orientation error (e&psi;).  The orientation error is the difference between the desired orientation and the current orientation.  The desired orientation is given by the arctangent of the derivative of f(x) or arctan(f<sup>'</sup>(x)).
 
-* These errors evolve according as follows:
+* These errors change from time t to time t+dt according to the equations:
 
     cte<sub>t+1</sub> = (y<sub>t</sub> - f(x<sub>t</sub>)) + v<sub>t</sub> sin(e&psi;<sub>t</sub>) * dt  
     e&psi;<sub>t+1</sub> = (&psi;<sub>t</sub> - arctan(f<sup>'</sup>(x<sub>t</sub>)) + (v<sub>t</sub>/L<sub>f</sub>) &delta;<sub>t</sub> * dt  
 
 ### Calculating the optimal steering and throttle 
-Given the current state of the vehicle, we need to find the optimal steering and throttle values that will lead to following the reference trajectory.  This can be done using optimization.  To do this, we step the car ahead in time N steps of duration dt.  We compare the cars trajectory with the reference trajectory and minimize the errors to find the optimal throttle a<sub>t</sub> and steering value &delta;<sub>t</sub> at each step.   The steering and throttle values from the first step are then used to drive the vehicle.   
+Given the current state of the vehicle, we need to find the optimal steering and throttle values that will lead to following the reference trajectory. This can be found using optimization. To do this, we step the car ahead in time N steps of duration dt. We compare the cars trajectory with the reference trajectory and minimize the errors to find the optimal throttle a<sub>t</sub> and steering value &delta;<sub>t</sub> at each step. The steering and throttle values from the first step are then used to drive the vehicle.
 
 This cost function that is minimized is
 <img src="images/j_cost.jpg" alt="lanes" width="500px" align="center"/>
 
-When minimizing the cost function, the weights, w, for the terms can be adjusted to obtain the desired behavior.
+The w's are the weights associated with each term and are adjusted to obtain the desired tracking behavior.
 
-**Latency:** In real systems, there is a time delay between when the state is measured and when the new control values are acted on. This latency was given as 100ms. To account for this, we evolve the vehicle's state and errors to where they would be at time latency from now, and start the optimization from there.
+**The weights w:**
+The weights for the cost function were set to w<sub>cte</sub>=1 w<sub>e&psi;</sub>=10, w<sub>v</sub>=0.0125, w<sub>&delta;</sub>=1000, w<sub>a</sub>=0.01, w<sub>&Delta;&delta;</sub>=1000 and w<sub>&Delta;a</sub>=0.01. 
 
-**N and dt:"**
+**N and dt:**
+The values of N=10 and dt=0.15 were chosen.  This provided a smooth ride around the track where the car cornered well and did not have overshoots on the straightaways after the corners.  Other combinations of N=10,15,20 and dt=0.1,0.15,0.2,0.3 were evaluated. 
 
+**Latency:** In real systems, there is a time delay between when the state of the system is measured and when the new control values are acted on. This latency was given as 100ms. To account for this, we evolve the vehicle's state and errors to where they would be at time t=100ms (the latency) from now and ran the optimization from t=100ms to t=100ms+N*dt. 
 
 ## The Race
 Enclosed is a video of the car racing around the track.
