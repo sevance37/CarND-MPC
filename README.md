@@ -11,6 +11,10 @@ The program is written in C++.  This Project is from Udacity's Self-Driving Car 
 4. Compile: `cmake .. && make`
 5. Run the programs: Run `./mpc`. Open [Term 2 Simulator](https://github.com/udacity/self-driving-car-sim/releases) and run the corresponding page.  
 
+## The Race
+Enclosed is a link to the [video](https://youtu.be/Eq0N_9HATig) of the car racing using the model and parameters described below.  
+[<img src="images/RaceCarProjectMPC.jpg" alt="lanes" width="400px"/>](https://youtu.be/Eq0N_9HATig)
+
 ## The Model  
 
 ### The Kinematic Model
@@ -63,9 +67,6 @@ The values of N=10 and dt=0.15 were chosen.  This provided a smooth ride around 
 
 **Latency:** In real systems, there is a time delay between when the state of the system is measured and when the new control values are acted on. This latency was given as 100ms. To account for this, we evolve the vehicle's state and errors to where they would be at time t=100ms (the latency) from now and ran the optimization from t=100ms to t=100ms+N*dt. 
 
-## The Race
-Enclosed is a video of the car racing around the track.
-<> 
 
 ## Other Important Dependencies
 
