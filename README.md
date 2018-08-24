@@ -4,18 +4,29 @@ The program is written in C++.  This Project is from Udacity's Self-Driving Car 
 
 ## Basic Set-up
 1. Clone this repo.
-2. Install the libraries uWebSockets and Ipopt 
-..* uWebSockters: Make sure [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) is installed.  Two install scripts are included for MAC and Linux.  For Windows use [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) and following the Linux instructions.
-..* Ipopt: Make sure Ipopt [Ipopt](https://projects.coin-or.org/Ipopt) is installed. The install script istall_ipopt.sh is included along with instructions that can be found in install_Ipopt_CppAD.md.
+2. Install the libraries uWebSockets and Ipopt   
+*uWebSockters*: Make sure [uWebSocketIO](https://github.com/uWebSockets/uWebSockets) is installed.  Two install scripts are included for MAC and Linux.  For Windows use [Windows 10 Bash on Ubuntu](https://www.howtogeek.com/249966/how-to-install-and-use-the-linux-bash-shell-on-windows-10/) and following the Linux instructions.  
+*Ipopt*: Make sure Ipopt [Ipopt](https://projects.coin-or.org/Ipopt) is installed. The install script istall_ipopt.sh is included along with instructions that can be found in install_Ipopt_CppAD.md.
 3. Make a build directory: `mkdir build && cd build`
 4. Compile: `cmake .. && make`
 5. Run the programs: Run `./mpc`. Open [Term 2 Simulator](https://github.com/udacity/self-driving-car-sim/releases) and run the corresponding page.  
 
-## The Model
-To drive the race car around the track, we need to specify its state variables, its actuators and the motion equations.
-#### The State
-#### The Actuators
-#### The motion equations
+## The Model  
+To drive the race car around the track, we need to specify a kinematic model for the vehicle.  To specify the model, we need to know the state of the car, how to control is movement via actuators and the equations of motions that it follows.
+* **The State**:  The state vector contains information about the state of the vehicle.  We track the position (x,y), the orientation (&psi;) and the velocity (v) of the car.  In addition to this, we include L<sub>f</sub> which is a measure of the distance between the front of the car and its center of gravity.  
+
+    state = [x, y, &psi;, v]    
+
+* **The Actuators**: The actuators are what we use to control the vehicle.  The actuators are the steering angle (&delta;) and the throttle (a).  The throttle (a) has a range from [-1,1] where negative values are for breaking and positive values are for acceleration.   
+
+    actuators = [&delta;, a]
+
+* **The Equations of motion**:  The equations of motion indicate how the car moves through time and are given below.  For each time step dt, the state evolves according to  
+
+    x<sub>t+1</sub> = x<sub>t</sub> + v<sub>t</sub>cos(&psi;<sub>t</sub>) * dt   
+    y<sub>t+1</sub> = y<sub>t</sub> + v<sub>t</sub>sin(&psi;<sub>t</sub>) * dt  
+    &psi;<sub>t+1</sub> = &psi;<sub>t</sub> + (v<sub>t</sub>/L<sub>f</sub>) &delta;<sub>t</sub> * dt  
+    v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> * dt
 
 #### How we evole the model.
 
