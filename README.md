@@ -43,7 +43,22 @@ To determine how far we are off of the desired path, we calculate two errors.
     cte<sub>t+1</sub> = (y<sub>t</sub> - f(x<sub>t</sub>)) + v<sub>t</sub> sin(e&psi;<sub>t</sub>) * dt  
     e&psi;<sub>t+1</sub> = (&psi;<sub>t</sub> - arctan(f<sup>'</sup>(x<sub>t</sub>)) + (v<sub>t</sub>/L<sub>f</sub>) &delta;<sub>t</sub> * dt  
 
-### 
+### Calculating the optimal steering and throttle 
+Given the current state of the vehicle, we need to find the optimal steering and throttle values that will lead to following the reference trajectory.  This can be done using optimization.  To do this, we step the car ahead in time N steps of duration dt.  We compare the cars trajectory with the reference trajectory and minimize the errors to find the optimal throttle a<sub>t</sub> and steering value &delta;<sub>t</sub> at each step.   The steering and throttle values from the first step are then used to drive the vehicle.   
+
+This cost function that is minimized is
+<img src="images/j_cost.jpg" alt="lanes" width="500px" align="center"/>
+
+When minimizing the cost function, the weights, w, for the terms can be adjusted to obtain the desired behavior.
+
+**Latency:** In real systems, there is a time delay between when the state is measured and when the new control values are acted on. This latency was given as 100ms. To account for this, we evolve the vehicle's state and errors to where they would be at time latency from now, and start the optimization from there.
+
+**N and dt:"**
+
+
+## The Race
+Enclosed is a video of the car racing around the track.
+<> 
 
 ## Other Important Dependencies
 
