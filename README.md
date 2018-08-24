@@ -1,5 +1,5 @@
-# CarND-MPC-Controller
-Drive a race car around a track using a MPC controller.  
+# CarND-MPC
+Drive a race car around a track using a MPC (Model Predictive Control). 
 The program is written in C++.  This Project is from Udacity's Self-Driving Car Engineer Nanodegree Program.
 
 ## Basic Set-up
@@ -12,6 +12,8 @@ The program is written in C++.  This Project is from Udacity's Self-Driving Car 
 5. Run the programs: Run `./mpc`. Open [Term 2 Simulator](https://github.com/udacity/self-driving-car-sim/releases) and run the corresponding page.  
 
 ## The Model  
+
+### The Kinematic Model
 To drive the race car around the track, we need to specify a kinematic model for the vehicle.  To specify the model, we need to know the state of the car, how to control is movement via actuators and the equations of motions that it follows.
 * **The State**:  The state vector contains information about the state of the vehicle.  We track the position (x,y), the orientation (&psi;) and the velocity (v) of the car.  In addition to this, we include L<sub>f</sub> which is a measure of the distance between the front of the car and its center of gravity.  
 
@@ -28,14 +30,20 @@ To drive the race car around the track, we need to specify a kinematic model for
     &psi;<sub>t+1</sub> = &psi;<sub>t</sub> + (v<sub>t</sub>/L<sub>f</sub>) &delta;<sub>t</sub> * dt  
     v<sub>t+1</sub> = v<sub>t</sub> + a<sub>t</sub> * dt
 
-#### How we evole the model.
+### The Trajectory
+To drive the race car around the track, we need to know the reference (or desired) path.  This is provided to us a set of waypoints.  The desired path can then be inferred by fitting those points with a cubic polynomial.   
 
-#### Accounting for latency.
+### The Errors
+To determine how far we are off of the desired path, we calculate two errors. 
+1. The cross track error (cte).  The cross track error is the perpendicular difference between the desired path and the vehicle's position.  The desired path is given as f(x), where f is the cubic polynomail fit to the waypoints.
+2. The orientation error (e&psi;).  The orientation error is the difference between the desired orientation and the current orientation.  The desired orientation is given by the arctangent of the derivative of f(x) or arctan(f<sup>'</sup>(x)).
 
-#### Adjusting the model.
+* These errors evolve according as follows:
 
+    cte<sub>t+1</sub> = (y<sub>t</sub> - f(x<sub>t</sub>)) + v<sub>t</sub> sin(e&psi;<sub>t</sub>) * dt  
+    e&psi;<sub>t+1</sub> = (&psi;<sub>t</sub> - arctan(f<sup>'</sup>(x<sub>t</sub>)) + (v<sub>t</sub>/L<sub>f</sub>) &delta;<sub>t</sub> * dt  
 
-## The hyperparameters
+### 
 
 ## Other Important Dependencies
 
